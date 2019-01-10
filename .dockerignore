@@ -1,6 +1,7 @@
 .git/
 node_modules/*
 src/**/__tests__/*
+tools/
 
 .eslintignore
 .eslintrc.js
