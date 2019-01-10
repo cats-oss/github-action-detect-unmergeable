@@ -36,20 +36,20 @@ async function checkAndMarkIfPullRequestUnmergeable(octokit, owner, repo, oldPul
 
     // When we get all opened pull requests, GitHub have not checked whether ths PR is unmergeble yet.
     // So I think we should retry them.
-    let mergeable = await shouldMarkPullRequestNeedRebase(octokit, owner, repo, number);
-    if (mergeable === null) {
+    let shouldMark = await shouldMarkPullRequestNeedRebase(octokit, owner, repo, number);
+    if (shouldMark === null) {
         // retry
         await sleep(SECONDS_WE_ASSUME_GITHUB_WOULD_COMPLETE_CHECK_IF_MERGEBLE);
-        mergeable = await shouldMarkPullRequestNeedRebase(octokit, owner, repo, number);
+        shouldMark = await shouldMarkPullRequestNeedRebase(octokit, owner, repo, number);
     }
 
-    console.log(`#${number} is mergeable: ${mergeable}`);
-    if (mergeable === null) {
+    console.log(`#${number} should be marked as needed rebase: ${shouldMark}`);
+    if (shouldMark === null) {
         // give up
         return;
     }
 
-    if (mergeable) {
+    if (!shouldMark) {
         return;
     }
 
@@ -90,7 +90,8 @@ async function shouldMarkPullRequestNeedRebase(octokit, owner, repo, number) {
         return null;
     }
 
-    return mergeable;
+    const shouldMark = !mergeable;
+    return shouldMark;
 }
 
 function sleep(millisec) {
