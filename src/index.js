@@ -9,6 +9,8 @@ const {
     getDefaultBranchName,
     getOpenPullRequestAll,
     checkAndMarkIfPullRequestUnmergeable,
+    isRelatedToPushedBranch,
+    getPullRequestId,
 } = require('./operations');
 
 (async function main() {
@@ -44,17 +46,27 @@ const {
     const eventData = JSON.parse(eventDataString);
 
     const eventOriginRefName = eventData.ref;
-    if (defaultBranchRef !== eventOriginRefName) {
-        console.log(`eventOriginRefName \`${eventOriginRefName}\` is not the default branch: ${defaultBranchRef}`);
-        return;
+    const ENABLE_CHECK_RELATIONSHIP_BETWEEN_PUSHED_AND_PR = process.env.ENABLE_CHECK_RELATIONSHIP_BETWEEN_PUSHED_AND_PR === 'true';
+    if (ENABLE_CHECK_RELATIONSHIP_BETWEEN_PUSHED_AND_PR) {
+        if (defaultBranchRef !== eventOriginRefName) {
+            console.log(`eventOriginRefName \`${eventOriginRefName}\` is not the default branch: ${defaultBranchRef}`);
+            return;
+        }
     }
 
     const compareUrl = eventData.compare;
-    console.dir(eventData); // DEBUG
 
     const openedPRList = await getOpenPullRequestAll(octokit, REPO_OWNER, REPO_NAME);
     const queue = [];
     for (const pullReqInfo of openedPRList) {
+        if (ENABLE_CHECK_RELATIONSHIP_BETWEEN_PUSHED_AND_PR) {
+            const number = getPullRequestId(pullReqInfo);
+            if (!isRelatedToPushedBranch(pullReqInfo, eventOriginRefName)) {
+                console.log(`#${number} is not related to ${eventOriginRefName}`);
+                continue;
+            }
+        }
+
         const task = checkAndMarkIfPullRequestUnmergeable(octokit, REPO_OWNER, REPO_NAME, pullReqInfo, compareUrl);
         queue.push(task);
     }

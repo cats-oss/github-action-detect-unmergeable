@@ -113,8 +113,40 @@ function assertTypeof(val, typename, message) {
     assert.strictEqual(typeof val, typename, message);
 }
 
+function isRelatedToPushedBranch(pullReqInfo, pushedBranchRef) {
+    //  Define to explain followings comments:
+    //      * _origin_ is the repository which registers & runs this action.
+    //      * _forked_ is the repository which is forked from _origin_.
+    //
+    //  We don't have to imagine the case which the user pushed to the branch in _forked_.
+    //  and its branch is opened as the pull requet for _origin_.
+    //  Because _push_ event happens and this action will run only if someone pushed to a branch on _origin_.
+    //
+    //  By the observation of the behavior of GitHub REST API v3 Pull Requests,
+    //  object's values would be followings if `repository_name:branch_name` is `octocat:master`.
+    //
+    //      * `.base.ref`
+    //          * The value is `master`.
+    //          * This value is the branch name which the pull request would be merged into.
+    //            even if the pull request is came from _forked_ or the one's parent is arbitary commit.
+    //      * `.base.label` is `octocat:master`.
+    //          * The value is `octocat:master`.
+    //          * This value is same even if the pull request is came from _forked_ or the one's parent is arbitary commit.
+    //
+    //  By theese result, I think we can judge that the pull request is related to the pushed branch by checking
+    //  whether `.base.ref` is same with the name of the pushed branch.
+
+    const currentBranchName = pullReqInfo.base.ref; // e.g. `master` in `octocat:master`
+    const pushedBranchName = pushedBranchRef.replace('refs/heads/', '');
+    const hasRelationShip = currentBranchName === pushedBranchName;
+
+    return hasRelationShip;
+}
+
 module.exports = Object.freeze({
     getDefaultBranchName,
     getOpenPullRequestAll,
     checkAndMarkIfPullRequestUnmergeable,
+    isRelatedToPushedBranch,
+    getPullRequestId,
 });
