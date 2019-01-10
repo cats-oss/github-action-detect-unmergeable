@@ -4,6 +4,6 @@ workflow "Detect unmergeable PRs" {
 }
 
 action "detect_unmergeable_pull_request_and_mark_them" {
-  uses = "cats-oss/github-action-detect-unmergeable@application-code"
+  uses = "./"
   secrets = ["GITHUB_TOKEN"]
 }
