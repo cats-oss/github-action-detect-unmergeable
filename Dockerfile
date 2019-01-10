@@ -1,11 +1,14 @@
-FROM node:11.6.0-alpine
+FROM golang:1.11.4-stretch
 
 LABEL "com.github.actions.name"="Detect Unmergeable"
 LABEL "com.github.actions.description"="Detect unmergeable pull requests"
 
+ENV GO111MODULE on
+
 ADD . /gh-action-detect-unmergeable/
 
 WORKDIR /gh-action-detect-unmergeable/
-RUN ["yarn", "--production"]
 
-ENTRYPOINT ["node", "/gh-action-detect-unmergeable/src/index.js"]
+RUN ["go", "build", "-o", "app"]
+
+ENTRYPOINT ["/gh-action-detect-unmergeable/app"]

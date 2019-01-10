@@ -1,7 +1,7 @@
 .git/
 .github/
 node_modules/*
-src/**/__tests__/*
+src/
 tools/
 
 .eslintignore
