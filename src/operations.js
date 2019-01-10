@@ -4,15 +4,6 @@ const assert = require('assert');
 
 const { hasNeedRebaseLabel, LABEL_STATUS_NEED_REBASE } = require('./labels');
 
-async function getDefaultBranchName(octokit, owner, repo) {
-    const result = await octokit.repos.get({owner, repo});
-    const body = result.data;
-    assert.strictEqual(!!body, true);
-
-    const branchName = body.default_branch;
-    return branchName;
-}
-
 async function getOpenPullRequestAll(octokit, owner, repo) {
     // FIXME: this code could not get all opened pull requests if there are over 100.
     const result = await octokit.pulls.list({
@@ -144,7 +135,6 @@ function isRelatedToPushedBranch(pullReqInfo, pushedBranchRef) {
 }
 
 module.exports = Object.freeze({
-    getDefaultBranchName,
     getOpenPullRequestAll,
     checkAndMarkIfPullRequestUnmergeable,
     isRelatedToPushedBranch,
