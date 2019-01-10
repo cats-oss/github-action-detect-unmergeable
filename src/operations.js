@@ -43,7 +43,7 @@ async function checkAndMarkIfPullRequestUnmergeable(octokit, owner, repo, oldPul
         mergeable = await shouldMarkPullRequestNeedRebase(octokit, owner, repo, number);
     }
 
-    console.log(`The mergeable of #${number} is ${mergeable}`);
+    console.log(`#${number} is mergeable: ${mergeable}`);
     if (mergeable === null) {
         // give up
         return;
