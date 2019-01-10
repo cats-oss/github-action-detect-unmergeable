@@ -1,11 +1,7 @@
 .git/
 .github/
-node_modules/*
-src/
 tools/
 
-.eslintignore
-.eslintrc.js
 .gitignore
 LICENSE.MIT
 Makefile
