@@ -6,7 +6,6 @@ const fs = require('fs').promises;
 const octokit = require('@octokit/rest')();
 
 const {
-    getDefaultBranchName,
     getOpenPullRequestAll,
     checkAndMarkIfPullRequestUnmergeable,
     isRelatedToPushedBranch,
@@ -35,10 +34,6 @@ const {
         token: GITHUB_TOKEN
     });
 
-    const defaultBranchName = await getDefaultBranchName(octokit, REPO_OWNER, REPO_NAME);
-    assertTypeof(defaultBranchName, 'string', `defaultBranchName should be string`);
-    const defaultBranchRef = `refs/heads/${defaultBranchName}`;
-
     const eventDataString = await fs.readFile(GITHUB_EVENT_PATH, {
         encoding: 'utf8',
         flag: 'r'
@@ -46,25 +41,16 @@ const {
     const eventData = JSON.parse(eventDataString);
 
     const eventOriginRefName = eventData.ref;
-    const ENABLE_CHECK_RELATIONSHIP_BETWEEN_PUSHED_AND_PR = process.env.ENABLE_CHECK_RELATIONSHIP_BETWEEN_PUSHED_AND_PR === 'true';
-    if (ENABLE_CHECK_RELATIONSHIP_BETWEEN_PUSHED_AND_PR) {
-        if (defaultBranchRef !== eventOriginRefName) {
-            console.log(`eventOriginRefName \`${eventOriginRefName}\` is not the default branch: ${defaultBranchRef}`);
-            return;
-        }
-    }
 
     const compareUrl = eventData.compare;
 
     const openedPRList = await getOpenPullRequestAll(octokit, REPO_OWNER, REPO_NAME);
     const queue = [];
     for (const pullReqInfo of openedPRList) {
-        if (ENABLE_CHECK_RELATIONSHIP_BETWEEN_PUSHED_AND_PR) {
-            const number = getPullRequestId(pullReqInfo);
-            if (!isRelatedToPushedBranch(pullReqInfo, eventOriginRefName)) {
-                console.log(`#${number} is not related to ${eventOriginRefName}`);
-                continue;
-            }
+        const number = getPullRequestId(pullReqInfo);
+        if (!isRelatedToPushedBranch(pullReqInfo, eventOriginRefName)) {
+            console.log(`#${number} is not related to ${eventOriginRefName}`);
+            continue;
         }
 
         const task = checkAndMarkIfPullRequestUnmergeable(octokit, REPO_OWNER, REPO_NAME, pullReqInfo, compareUrl);
