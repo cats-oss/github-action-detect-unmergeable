@@ -1,8 +1,11 @@
 .git/
+.github/
 node_modules/*
 src/**/__tests__/*
 tools/
 
 .eslintignore
 .eslintrc.js
+.gitignore
+LICENSE.MIT
 Makefile
