@@ -3,11 +3,9 @@ FROM node:11.6.0-alpine
 LABEL "com.github.actions.name"="Detect Unmergeable"
 LABEL "com.github.actions.description"="Detect unmergeable pull requests"
 
-ADD src/ /app/src/
-ADD package.json /app/package.json
-ADD yarn.lock /app/yarn.lock
+ADD . /gh-action-detect-unmergeable/
 
-WORKDIR /app
+WORKDIR /gh-action-detect-unmergeable/
 RUN ["yarn", "--production"]
 
-ENTRYPOINT ["node", "/app/src/index.js"]
+ENTRYPOINT ["node", "/gh-action-detect-unmergeable/src/index.js"]
