@@ -13,7 +13,7 @@ help:
 
 .PHONY: clean
 clean: ## Clean up generated artifacts
-	rm -rf $(DIST_NAME)
+	rm -rf $(DIST_APP_BIN_NAME)
 
 
 .PHONY: build
