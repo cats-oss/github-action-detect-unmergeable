@@ -7,7 +7,7 @@ import (
 
 	"encoding/json"
 
-	"github.com/google/go-github/v21/github"
+	"github.com/google/go-github/v24/github"
 )
 
 func loadJSONFile(path string) *github.PushEvent {
