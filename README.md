@@ -1,5 +1,6 @@
 # GitHub Action to Detect an Unmergeable Pull Request
 
+[![CircleCI](https://circleci.com/gh/cats-oss/github-action-detect-unmergeable.svg?style=svg)](https://circleci.com/gh/cats-oss/github-action-detect-unmergeable)
 
 * This works as [GitHub Actions](https://developer.github.com/actions/).
 * This detects & mark the pull request is unmergeable by changing its upstream.
