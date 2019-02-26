@@ -10,6 +10,8 @@ import (
 	"golang.org/x/oauth2"
 )
 
+const defaultNeedRebaseLabel = "S-needs-rebase"
+
 func main() {
 	githubToken := os.Getenv("GITHUB_TOKEN")
 	if githubToken == "" {
@@ -38,6 +40,12 @@ func main() {
 		log.Fatalln("$GITHUB_EVENT_PATH is empty")
 		return
 	}
+
+	needRebaseLabel := os.Getenv("LABEL_NEED_REBASE")
+	if needRebaseLabel == "" {
+		needRebaseLabel = defaultNeedRebaseLabel
+	}
+	log.Printf("We will supply `%v` if the pull request is unmergeable\n", needRebaseLabel)
 
 	eventData := loadJSONFile(githubEventPath)
 	if eventData == nil {
@@ -90,7 +98,7 @@ func main() {
 				return
 			}
 
-			checkAndMarkIfPullRequestUnmergeable(githubClient, repoOwner, repoName, pr, compareURL)
+			checkAndMarkIfPullRequestUnmergeable(githubClient, repoOwner, repoName, pr, compareURL, needRebaseLabel)
 		}(pr)
 	}
 	wg.Wait()

@@ -73,20 +73,20 @@ func isRelatedToPushedBranch(pullReqInfo *github.PullRequest, pushedBranchRef st
 	return
 }
 
-func checkAndMarkIfPullRequestUnmergeable(client *github.Client, owner, repo string, oldPR *github.PullRequest, compareURL string) {
+func checkAndMarkIfPullRequestUnmergeable(client *github.Client, owner, repo string, oldPR *github.PullRequest, compareURL, labelStatusNeedRebase string) {
 	number := oldPR.GetNumber()
 	if number == 0 {
 		return
 	}
 
-	if hasNeedRebaseLabel(oldPR.Labels) {
+	if hasNeedRebaseLabel(oldPR.Labels, labelStatusNeedRebase) {
 		log.Printf("#%v has been labeled as %v\n", number, labelStatusNeedRebase)
 		return
 	}
 
 	// When we get all opened pull requests, GitHub have not checked whether ths PR is unmergeble yet.
 	// So I think we should retry them.
-	hasCompleted, shouldMark, err := shouldMarkPullRequestNeedRebase(client, owner, repo, number)
+	hasCompleted, shouldMark, err := shouldMarkPullRequestNeedRebase(client, owner, repo, number, labelStatusNeedRebase)
 	if err != nil {
 		log.Printf("#%v fails: %v\n", number, err)
 		return
@@ -95,7 +95,7 @@ func checkAndMarkIfPullRequestUnmergeable(client *github.Client, owner, repo str
 	if !hasCompleted {
 		// retry
 		time.Sleep(10 * time.Second)
-		hasCompleted, shouldMark, err = shouldMarkPullRequestNeedRebase(client, owner, repo, number)
+		hasCompleted, shouldMark, err = shouldMarkPullRequestNeedRebase(client, owner, repo, number, labelStatusNeedRebase)
 		if err != nil {
 			log.Printf("#%v fails: %v\n", number, err)
 			return
@@ -143,9 +143,7 @@ func checkAndMarkIfPullRequestUnmergeable(client *github.Client, owner, repo str
 	wg.Wait()
 }
 
-const labelStatusNeedRebase = "S-needs-rebase"
-
-func hasNeedRebaseLabel(labels []*github.Label) bool {
+func hasNeedRebaseLabel(labels []*github.Label, labelStatusNeedRebase string) bool {
 	for _, label := range labels {
 		name := label.GetName()
 		if name == labelStatusNeedRebase {
@@ -156,7 +154,7 @@ func hasNeedRebaseLabel(labels []*github.Label) bool {
 	return false
 }
 
-func shouldMarkPullRequestNeedRebase(client *github.Client, owner, repo string, number int) (hasCompleted bool, shouldMark bool, err error) {
+func shouldMarkPullRequestNeedRebase(client *github.Client, owner, repo string, number int, labelStatusNeedRebase string) (hasCompleted bool, shouldMark bool, err error) {
 	ctx := context.Background()
 	newPRInfoResponse, _, err := client.PullRequests.Get(ctx, owner, repo, number)
 	if err != nil {
@@ -171,7 +169,7 @@ func shouldMarkPullRequestNeedRebase(client *github.Client, owner, repo string, 
 	hasCompleted = true
 
 	// Check again to confirm the other instance of this action's behavior.
-	if hasNeedRebaseLabel(newPRInfoResponse.Labels) {
+	if hasNeedRebaseLabel(newPRInfoResponse.Labels, labelStatusNeedRebase) {
 		shouldMark = false
 		return
 	}
