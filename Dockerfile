@@ -1,4 +1,4 @@
-FROM golang:1.11.4-stretch
+FROM golang:1.12-stretch
 
 LABEL "com.github.actions.name"="Detect Unmergeable"
 LABEL "com.github.actions.description"="Detect unmergeable pull requests"
