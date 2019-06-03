@@ -79,7 +79,7 @@ func checkAndMarkIfPullRequestUnmergeable(client *github.Client, owner, repo str
 		return
 	}
 
-	if hasNeedRebaseLabel(oldPR.Labels, labelStatusNeedRebase) {
+	if hasLabel(oldPR.Labels, labelStatusNeedRebase) {
 		log.Printf("#%v has been labeled as %v\n", number, labelStatusNeedRebase)
 		return
 	}
@@ -143,10 +143,10 @@ func checkAndMarkIfPullRequestUnmergeable(client *github.Client, owner, repo str
 	wg.Wait()
 }
 
-func hasNeedRebaseLabel(labels []*github.Label, labelStatusNeedRebase string) bool {
+func hasLabel(labels []*github.Label, labelName string) bool {
 	for _, label := range labels {
 		name := label.GetName()
-		if name == labelStatusNeedRebase {
+		if name == labelName {
 			return true
 		}
 	}
@@ -169,7 +169,7 @@ func shouldMarkPullRequestNeedRebase(client *github.Client, owner, repo string, 
 	hasCompleted = true
 
 	// Check again to confirm the other instance of this action's behavior.
-	if hasNeedRebaseLabel(newPRInfoResponse.Labels, labelStatusNeedRebase) {
+	if hasLabel(newPRInfoResponse.Labels, labelStatusNeedRebase) {
 		shouldMark = false
 		return
 	}
