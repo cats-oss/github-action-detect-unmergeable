@@ -73,9 +73,14 @@ func isRelatedToPushedBranch(pullReqInfo *github.PullRequest, pushedBranchRef st
 	return
 }
 
-func checkAndMarkIfPullRequestUnmergeable(client *github.Client, owner, repo string, oldPR *github.PullRequest, compareURL, labelStatusNeedRebase string) {
+func checkAndMarkIfPullRequestUnmergeable(client *github.Client, owner, repo string, oldPR *github.PullRequest, compareURL, labelStatusNeedRebase, labelSkipChecking string) {
 	number := oldPR.GetNumber()
 	if number == 0 {
+		return
+	}
+
+	if labelSkipChecking != "" && hasLabel(oldPR.Labels, labelSkipChecking) {
+		log.Printf("#%v has skipping label: %v\n", number, labelSkipChecking)
 		return
 	}
 

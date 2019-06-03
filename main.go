@@ -47,6 +47,11 @@ func main() {
 	}
 	log.Printf("We will supply `%v` if the pull request is unmergeable\n", needRebaseLabel)
 
+	labelSkipChecking := os.Getenv("LABEL_SKIP_CHECKING")
+	if labelSkipChecking != "" {
+		log.Printf("We will skip checking mergeability if the pull request has a label `%v`\n", labelSkipChecking)
+	}
+
 	eventData := loadJSONFile(githubEventPath)
 	if eventData == nil {
 		log.Fatal("Could not get eventData")
@@ -98,7 +103,7 @@ func main() {
 				return
 			}
 
-			checkAndMarkIfPullRequestUnmergeable(githubClient, repoOwner, repoName, pr, compareURL, needRebaseLabel)
+			checkAndMarkIfPullRequestUnmergeable(githubClient, repoOwner, repoName, pr, compareURL, needRebaseLabel, labelSkipChecking)
 		}(pr)
 	}
 	wg.Wait()
