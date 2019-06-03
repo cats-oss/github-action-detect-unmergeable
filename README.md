@@ -38,3 +38,22 @@ action "detect_unmergeable_pull_request_and_mark_them" {
   secrets = ["GITHUB_TOKEN"]
 }
 ```
+
+## Customization
+
+The default label of marking unmergeable is `S-needs-rebase`.
+This value is configurable if `LABEL_NEED_REBASE` environment variable is set.
+
+If it is not necessary to check mergeability, you can specify skip label to `LABEL_SKIP_CHECKING` environment variable.
+When `DO NOT MERGE` is given for example, a pull request has `DO NOT MERGE` will be ignored checking mergeability.
+
+```
+action "detect_unmergeable_pull_request_and_mark_them" {
+  uses = "cats-oss/github-action-detect-unmergeable@master"
+  secrets = ["GITHUB_TOKEN"]
+  env = {
+    LABEL_NEED_REBASE = "Rebase required"
+    LABEL_SKIP_CHECKING = "DO NOT MERGE"
+  }
+}
+```
