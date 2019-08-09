@@ -1,0 +1,5 @@
+name: 'Detect Unmergeable'
+description: 'Detect unmergeable pull requests'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
