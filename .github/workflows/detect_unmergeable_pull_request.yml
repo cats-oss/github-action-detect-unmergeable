@@ -1,5 +1,6 @@
-on: push
 name: Detect unmergeable PRs
+on: push
+
 jobs:
   detect_unmergeable_pull_request_and_mark_them:
     runs-on: ubuntu-latest
