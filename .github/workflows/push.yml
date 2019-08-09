@@ -6,6 +6,6 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: detect_unmergeable_pull_request_and_mark_them
-      uses: cats-oss/github-action-detect-unmergeable@master
+      uses: cats-oss/github-action-detect-unmergeable@new-action
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
