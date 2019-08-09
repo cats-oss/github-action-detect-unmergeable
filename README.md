@@ -2,7 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/cats-oss/github-action-detect-unmergeable.svg?style=svg)](https://circleci.com/gh/cats-oss/github-action-detect-unmergeable)
 
-* This works as [GitHub Actions](https://developer.github.com/actions/).
+* This works as [GitHub Actions](https://help.github.com/en/articles/about-github-actions).
 * This detects & mark the pull request is unmergeable by changing its upstream.
 * This behaves like [highfive](https://github.com/servo/highfive) or [popuko](https://github.com/voyagegroup/popuko)
 
@@ -24,7 +24,30 @@
 
 ## How to use (Setup)
 
-Add this example to your GitHub Actions workflow configuration (e.g. `.github/main.workflow`).
+Add this example to your GitHub Actions [workflow configuration](https://help.github.com/en/articles/configuring-workflows).
+
+
+### YAML syntax
+
+```yaml
+name: Detect unmergeable PRs
+on: push
+
+jobs:
+  detect_unmergeable_pull_request_and_mark_them:
+    runs-on: ubuntu-latest
+    steps:
+    - name: detect_unmergeable_pull_request_and_mark_them
+      # We recommend to use an arbitary latest version
+      # if you don't have any troubles.
+      # You can also specify `master`, but it sometimes might be broken.
+      uses: cats-oss/github-action-detect-unmergeable@v1.2.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+
+### Legacy HCL syntax
 
 
 ```
@@ -34,7 +57,7 @@ workflow "Detect unmergeable PRs" {
 }
 
 action "detect_unmergeable_pull_request_and_mark_them" {
-  uses = "cats-oss/github-action-detect-unmergeable@master"
+  uses = "cats-oss/github-action-detect-unmergeable@v1.1.1"
   secrets = ["GITHUB_TOKEN"]
 }
 ```
