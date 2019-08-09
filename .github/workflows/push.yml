@@ -4,7 +4,6 @@ jobs:
   detect_unmergeable_pull_request_and_mark_them:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
     - name: detect_unmergeable_pull_request_and_mark_them
       uses: cats-oss/github-action-detect-unmergeable@new-action
       env:
