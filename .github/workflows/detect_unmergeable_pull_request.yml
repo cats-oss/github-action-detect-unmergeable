@@ -6,6 +6,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: detect_unmergeable_pull_request_and_mark_them
-      uses: cats-oss/github-action-detect-unmergeable@new-action
+      uses: cats-oss/github-action-detect-unmergeable@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
