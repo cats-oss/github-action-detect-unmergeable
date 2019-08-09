@@ -24,7 +24,30 @@
 
 ## How to use (Setup)
 
-Add this example to your GitHub Actions workflow configuration (e.g. `.github/main.workflow`).
+Add this example to your GitHub Actions [workflow configuration](https://help.github.com/en/articles/configuring-workflows).
+
+
+### YAML syntax
+
+```yaml
+name: Detect unmergeable PRs
+on: push
+
+jobs:
+  detect_unmergeable_pull_request_and_mark_them:
+    runs-on: ubuntu-latest
+    steps:
+    - name: detect_unmergeable_pull_request_and_mark_them
+      # We recommend to use an arbitary latest version
+      # if you don't have any troubles.
+      # You can also specify `master`, but it sometimes might be broken.
+      uses: cats-oss/github-action-detect-unmergeable@v1.2.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+
+### Legacy HCL syntax
 
 
 ```
@@ -34,7 +57,7 @@ workflow "Detect unmergeable PRs" {
 }
 
 action "detect_unmergeable_pull_request_and_mark_them" {
-  uses = "cats-oss/github-action-detect-unmergeable@master"
+  uses = "cats-oss/github-action-detect-unmergeable@v1.1.1"
   secrets = ["GITHUB_TOKEN"]
 }
 ```
