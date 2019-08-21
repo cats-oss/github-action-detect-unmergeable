@@ -1,5 +1,11 @@
 name: Detect unmergeable PRs
-on: push
+
+on:
+  push:
+    # Ignore all pushing for tags
+    tags:
+      - "!*"
+
 
 jobs:
   detect_unmergeable_pull_request_and_mark_them:
