@@ -41,7 +41,7 @@ jobs:
         # We recommend to use an arbitary latest version
         # if you don't have any troubles.
         # You can also specify `master`, but it sometimes might be broken.
-        uses: cats-oss/github-action-detect-unmergeable@v1.2.0
+        uses: cats-oss/github-action-detect-unmergeable@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
