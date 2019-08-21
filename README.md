@@ -37,13 +37,13 @@ jobs:
   detect_unmergeable_pull_request_and_mark_them:
     runs-on: ubuntu-latest
     steps:
-    - name: detect_unmergeable_pull_request_and_mark_them
-      # We recommend to use an arbitary latest version
-      # if you don't have any troubles.
-      # You can also specify `master`, but it sometimes might be broken.
-      uses: cats-oss/github-action-detect-unmergeable@v1.2.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run the action to detect unmergeable PRs
+        # We recommend to use an arbitary latest version
+        # if you don't have any troubles.
+        # You can also specify `master`, but it sometimes might be broken.
+        uses: cats-oss/github-action-detect-unmergeable@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 
