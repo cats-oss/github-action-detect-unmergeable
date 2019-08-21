@@ -1,5 +1,12 @@
 name: Detect unmergeable PRs
-on: push
+
+on:
+  push:
+    branches:
+      - *
+    tags:
+      - "!*"
+
 
 jobs:
   detect_unmergeable_pull_request_and_mark_them:
