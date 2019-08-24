@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/go-github/v25/github"
+	"github.com/google/go-github/v28/github"
 )
 
 func getOpenPullRequestAll(client *github.Client, owner, name string) []*github.PullRequest {
