@@ -1,4 +1,4 @@
-FROM golang:1.12-buster
+FROM golang:1.13-buster
 
 LABEL "com.github.actions.name"="Detect Unmergeable"
 LABEL "com.github.actions.description"="Detect unmergeable pull requests"

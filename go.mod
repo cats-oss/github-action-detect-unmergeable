@@ -1,6 +1,6 @@
 module github.com/cats-oss/github-action-detect-unmergeable
 
-go 1.12
+go 1.13
 
 require (
 	github.com/google/go-github/v28 v28.0.1
