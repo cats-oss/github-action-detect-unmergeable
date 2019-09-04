@@ -18,4 +18,4 @@ clean: ## Clean up generated artifacts
 
 .PHONY: build
 build: clean ## Build the application
-	GO111MODULE=on $(GO_BUILD) -o $(DIST_APP_BIN_NAME)
+	$(GO_BUILD) -o $(DIST_APP_BIN_NAME)
