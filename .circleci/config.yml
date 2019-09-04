@@ -13,7 +13,7 @@ executors:
     build_executor:
         working_directory: *workspace_root
         docker:
-            - image: golang:1.12-stretch
+            - image: golang:1.12-buster
 
 
 ###########################################
