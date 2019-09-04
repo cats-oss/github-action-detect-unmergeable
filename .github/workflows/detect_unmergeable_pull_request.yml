@@ -2,6 +2,8 @@ name: Detect unmergeable PRs
 
 on:
   push:
+    branches:
+      - "*"
     # Ignore all pushing for tags
     tags:
       - "!*"
