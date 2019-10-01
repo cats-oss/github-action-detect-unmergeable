@@ -41,23 +41,7 @@ jobs:
         # We recommend to use an arbitary latest version
         # if you don't have any troubles.
         # You can also specify `master`, but it sometimes might be broken.
-        uses: cats-oss/github-action-detect-unmergeable@v1
+        uses: cats-oss/github-action-detect-unmergeable@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-```
-
-
-### Legacy HCL syntax
-
-
-```
-workflow "Detect unmergeable PRs" {
-  on = "push"
-  resolves = ["detect_unmergeable_pull_request_and_mark_them"]
-}
-
-action "detect_unmergeable_pull_request_and_mark_them" {
-  uses = "cats-oss/github-action-detect-unmergeable@v1.1.1"
-  secrets = ["GITHUB_TOKEN"]
-}
 ```
