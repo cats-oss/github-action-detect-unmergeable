@@ -1,4 +1,4 @@
-FROM golang:1.13-buster
+FROM golang:1.14.0-buster
 
 ADD . /gh-action-detect-unmergeable/
 
