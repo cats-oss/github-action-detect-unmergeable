@@ -1,7 +1,7 @@
 GO_CMD := go
 GO_BUILD := $(GO_CMD) build
 
-DIST_APP_BIN_NAME := app
+DIST_APP_BIN_NAME := ghaction_unmergeable_detection
 
 all: help
 
