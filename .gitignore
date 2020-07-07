@@ -98,7 +98,7 @@ tags
 *.out
 
 # Generated
-app
+ghaction_unmergeable_detection
 
 # caches
 vendor/
