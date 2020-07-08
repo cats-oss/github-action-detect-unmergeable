@@ -151,15 +151,19 @@ func onPullRequestEvent(githubClient *github.Client, githubEventPath string, rep
 		return
 	}
 
-	pr := eventData.PullRequest
-	prNumber := pr.GetNumber()
+	prNumber := eventData.GetNumber()
 	if prNumber == 0 {
-		log.Fatalln("we cannot get the PR number for this pull request")
+		log.Println("we cannot get the PR number for this pull request")
 		return
 	}
 
-	if _, isUnmergeable := checkWhetherThisPullRequestNeedRebase(pr, needRebaseLabel); isUnmergeable {
-		log.Printf("#%v is not mergeable", prNumber)
+	_, isUnmergeable, err := shouldMarkPullRequestNeedRebase(githubClient, repoOwner, repoName, prNumber, needRebaseLabel)
+	if err != nil {
+		return
+	}
+
+	if isUnmergeable {
+		log.Printf("#%v is not mergeable. We don't do anything", prNumber)
 		return
 	}
 

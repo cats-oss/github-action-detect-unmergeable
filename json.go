@@ -6,8 +6,6 @@ import (
 	"os"
 
 	"encoding/json"
-
-	"github.com/google/go-github/v32/github"
 )
 
 // PushEventData is workaround to use *github.PushEvent.
@@ -55,9 +53,8 @@ func loadJSONFileForPushEventData(path string) *PushEventData {
 // If we available, we should use *github.PushEvent.
 // But we cannot use it by parsing error. See https://github.com/cats-oss/github-action-detect-unmergeable/issues/71
 type PullRequestEventData struct {
-	Action      *string             `json:"action,omitempty"`
-	Number      *int                `json:"number,omitempty"`
-	PullRequest *github.PullRequest `json:"pull_request,omitempty"`
+	Action *string `json:"action,omitempty"`
+	Number *int    `json:"number,omitempty"`
 }
 
 func (p *PullRequestEventData) GetAction() string {
