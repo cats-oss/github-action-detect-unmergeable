@@ -14,6 +14,7 @@
 3. If the pull request is not mergeable (unmergeable), this action do:
     * Comment to the pull request about the changeset which might breaks it. 
     * Change the label for its pull request to mark that it is unmergeable.
+        * This action can remove the added label if the PR's conflict is resolved by rebasing or others (_optional_).
 
 
 ## Motivation
@@ -56,4 +57,16 @@ jobs:
         uses: cats-oss/github-action-detect-unmergeable@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+#### Debugging
+
+If you have some troubles, please try to see information
+by inserting the below snippet to `steps` section for this workflow.
+
+```yaml
+      - name: Dump GitHub Context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "${GITHUB_CONTEXT}"
 ```
