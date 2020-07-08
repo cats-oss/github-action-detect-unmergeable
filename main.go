@@ -172,4 +172,6 @@ func onPullRequestEvent(githubClient *github.Client, githubEventPath string, rep
 		log.Printf("#%v is mergeable but fail to remove the label `%v`", prNumber, needRebaseLabel)
 		return
 	}
+
+	log.Printf("#%v is mergeable. We removed the label `%v`", prNumber, needRebaseLabel)
 }
