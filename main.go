@@ -71,10 +71,10 @@ func main() {
 	switch actionType {
 	case ACTION_TYPE_PUSH:
 		log.Println("Search and mark unmergeable pull requests.")
-		onPushEvent(githubClient, githubEventPath, repoOwner, repoName, needRebaseLabel)
+		checkWhetherPushCausedUnmergeable(githubClient, githubEventPath, repoOwner, repoName, needRebaseLabel)
 	case ACTION_TYPE_PULL_REQ:
 		log.Println("Check whether the synced pull request is mergeable or not.")
-		onPullRequestEvent(githubClient, githubEventPath, repoOwner, repoName, needRebaseLabel)
+		checkPrIsChangedToMergeable(githubClient, githubEventPath, repoOwner, repoName, needRebaseLabel)
 	default:
 		return
 	}
@@ -91,7 +91,7 @@ func createGithubClient(token string) *github.Client {
 	return client
 }
 
-func onPushEvent(githubClient *github.Client, githubEventPath string, repoOwner string, repoName string, needRebaseLabel string) {
+func checkWhetherPushCausedUnmergeable(githubClient *github.Client, githubEventPath string, repoOwner string, repoName string, needRebaseLabel string) {
 	eventData := loadJSONFileForPushEventData(githubEventPath)
 	if eventData == nil {
 		log.Fatal("Could not get eventData")
@@ -139,7 +139,7 @@ func onPushEvent(githubClient *github.Client, githubEventPath string, repoOwner 
 	wg.Wait()
 }
 
-func onPullRequestEvent(githubClient *github.Client, githubEventPath string, repoOwner string, repoName string, needRebaseLabel string) {
+func checkPrIsChangedToMergeable(githubClient *github.Client, githubEventPath string, repoOwner string, repoName string, needRebaseLabel string) {
 	eventData := loadJSONFileForPullRequestEventData(githubEventPath)
 	if eventData == nil {
 		log.Fatal("Could not get eventData")
