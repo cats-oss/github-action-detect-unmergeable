@@ -70,8 +70,10 @@ func main() {
 
 	switch actionType {
 	case ACTION_TYPE_PUSH:
+		log.Println("Search and mark unmergeable pull requests.")
 		onPushEvent(githubClient, githubEventPath, repoOwner, repoName, needRebaseLabel)
 	case ACTION_TYPE_PULL_REQ:
+		log.Println("Check whether the synced pull request is mergeable or not.")
 		onPullRequestEvent(githubClient, githubEventPath, repoOwner, repoName, needRebaseLabel)
 	default:
 		return
@@ -156,14 +158,14 @@ func onPullRequestEvent(githubClient *github.Client, githubEventPath string, rep
 		return
 	}
 
-	if _, shouldMark := checkWhetherThisPullRequestNeedRebase(pr, needRebaseLabel); shouldMark {
+	if _, isUnmergeable := checkWhetherThisPullRequestNeedRebase(pr, needRebaseLabel); isUnmergeable {
 		log.Printf("#%v is not mergeable", prNumber)
 		return
 	}
 
 	ctx := context.Background()
 	if _, err := githubClient.Issues.RemoveLabelForIssue(ctx, repoOwner, repoName, prNumber, needRebaseLabel); err != nil {
-		log.Printf("#%v is mergeable but fail to remove the label", prNumber)
+		log.Printf("#%v is mergeable but fail to remove the label `%v`", prNumber, needRebaseLabel)
 		return
 	}
 }
