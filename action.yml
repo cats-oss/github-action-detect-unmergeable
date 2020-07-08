@@ -1,4 +1,4 @@
-name: 'Detect unmergeabl Pull Request'
+name: 'Detect unmergeable Pull Request'
 description: 'Detect unmergeable pull requests. This actions labels such PRs and mention suspicious changes'
 runs:
   using: 'docker'
