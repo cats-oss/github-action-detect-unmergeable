@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"strings"
@@ -11,6 +12,11 @@ import (
 )
 
 const defaultNeedRebaseLabel = "S-needs-rebase"
+
+const (
+	ACTION_TYPE_PUSH     = iota
+	ACTION_TYPE_PULL_REQ = iota
+)
 
 func main() {
 	githubToken := os.Getenv("GITHUB_TOKEN")
@@ -25,12 +31,17 @@ func main() {
 		return
 	}
 
+	var actionType int
 	githubEventName := os.Getenv("GITHUB_EVENT_NAME")
-	if githubEventName == "" {
+	switch githubEventName {
+	case "":
 		log.Fatalln("$GITHUB_EVENT_NAME is empty")
 		return
-	}
-	if githubEventName != "push" {
+	case "push":
+		actionType = ACTION_TYPE_PUSH
+	case "pull_request":
+		actionType = ACTION_TYPE_PULL_REQ
+	default:
 		log.Fatalln("Unsupported $GITHUB_EVENT_NAME: " + githubEventName)
 		return
 	}
@@ -47,7 +58,39 @@ func main() {
 	}
 	log.Printf("We will supply `%v` if the pull request is unmergeable\n", needRebaseLabel)
 
-	eventData := loadJSONFile(githubEventPath)
+	githubClient := createGithubClient(githubToken)
+	if githubClient == nil {
+		log.Fatalln("could not create githubClient")
+		return
+	}
+
+	repoPair := strings.Split(repositoryFullName, "/")
+	repoOwner := repoPair[0]
+	repoName := repoPair[1]
+
+	switch actionType {
+	case ACTION_TYPE_PUSH:
+		onPushEvent(githubClient, githubEventPath, repoOwner, repoName, needRebaseLabel)
+	case ACTION_TYPE_PULL_REQ:
+		onPullRequestEvent(githubClient, githubEventPath, repoOwner, repoName, needRebaseLabel)
+	default:
+		return
+	}
+}
+
+func createGithubClient(token string) *github.Client {
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{
+			AccessToken: token,
+		},
+	)
+	tc := oauth2.NewClient(oauth2.NoContext, ts)
+	client := github.NewClient(tc)
+	return client
+}
+
+func onPushEvent(githubClient *github.Client, githubEventPath string, repoOwner string, repoName string, needRebaseLabel string) {
+	eventData := loadJSONFileForPushEventData(githubEventPath)
 	if eventData == nil {
 		log.Fatal("Could not get eventData")
 		return
@@ -64,16 +107,6 @@ func main() {
 		// avoid this.
 		log.Println("compareURL is empty string")
 	}
-
-	githubClient := createGithubClient(githubToken)
-	if githubClient == nil {
-		log.Fatalln("could not create githubClient")
-		return
-	}
-
-	repoPair := strings.Split(repositoryFullName, "/")
-	repoOwner := repoPair[0]
-	repoName := repoPair[1]
 
 	openedPRList := getOpenPullRequestAll(githubClient, repoOwner, repoName)
 	if openedPRList == nil {
@@ -104,13 +137,33 @@ func main() {
 	wg.Wait()
 }
 
-func createGithubClient(token string) *github.Client {
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{
-			AccessToken: token,
-		},
-	)
-	tc := oauth2.NewClient(oauth2.NoContext, ts)
-	client := github.NewClient(tc)
-	return client
+func onPullRequestEvent(githubClient *github.Client, githubEventPath string, repoOwner string, repoName string, needRebaseLabel string) {
+	eventData := loadJSONFileForPullRequestEventData(githubEventPath)
+	if eventData == nil {
+		log.Fatal("Could not get eventData")
+		return
+	}
+
+	if action := eventData.GetAction(); action != "synchronize" {
+		log.Printf("we cannot handle `#%v`", action)
+		return
+	}
+
+	pr := eventData.PullRequest
+	prNumber := pr.GetNumber()
+	if prNumber == 0 {
+		log.Fatalln("we cannot get the PR number for this pull request")
+		return
+	}
+
+	if _, shouldMark := checkWhetherThisPullRequestNeedRebase(pr, needRebaseLabel); shouldMark {
+		log.Printf("#%v is not mergeable", prNumber)
+		return
+	}
+
+	ctx := context.Background()
+	if _, err := githubClient.Issues.RemoveLabelForIssue(ctx, repoOwner, repoName, prNumber, needRebaseLabel); err != nil {
+		log.Printf("#%v is mergeable but fail to remove the label", prNumber)
+		return
+	}
 }

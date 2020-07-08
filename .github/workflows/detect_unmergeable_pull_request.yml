@@ -7,7 +7,8 @@ on:
     # Ignore all pushing for tags
     tags:
       - "!*"
-
+  pull_request:
+    types: synchronize
 
 jobs:
   detect_unmergeable_pull_request_and_mark_them:

@@ -161,7 +161,12 @@ func shouldMarkPullRequestNeedRebase(client *github.Client, owner, repo string, 
 		return
 	}
 
-	mergeable := newPRInfoResponse.Mergeable
+	hasCompleted, shouldMark = checkWhetherThisPullRequestNeedRebase(newPRInfoResponse, labelStatusNeedRebase)
+	return
+}
+
+func checkWhetherThisPullRequestNeedRebase(pr *github.PullRequest, labelStatusNeedRebase string) (hasCompleted bool, shouldMark bool) {
+	mergeable := pr.Mergeable
 	if mergeable == nil {
 		return
 	}
@@ -169,7 +174,7 @@ func shouldMarkPullRequestNeedRebase(client *github.Client, owner, repo string, 
 	hasCompleted = true
 
 	// Check again to confirm the other instance of this action's behavior.
-	if hasNeedRebaseLabel(newPRInfoResponse.Labels, labelStatusNeedRebase) {
+	if hasNeedRebaseLabel(pr.Labels, labelStatusNeedRebase) {
 		shouldMark = false
 		return
 	}
