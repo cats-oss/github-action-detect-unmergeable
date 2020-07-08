@@ -158,6 +158,7 @@ func shouldMarkPullRequestNeedRebase(client *github.Client, owner, repo string, 
 	ctx := context.Background()
 	newPRInfoResponse, _, err := client.PullRequests.Get(ctx, owner, repo, number)
 	if err != nil {
+		log.Printf("Getting info about #%v was failed.", number)
 		return
 	}
 
