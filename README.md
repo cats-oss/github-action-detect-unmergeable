@@ -31,7 +31,19 @@ Add this example to your GitHub Actions [workflow configuration](https://help.gi
 
 ```yaml
 name: Detect unmergeable PRs
-on: push
+
+on:
+  push:
+    branches:
+      - "*"
+    # Ignore all pushing for tags
+    tags:
+      - "!*"
+  # If you'd like to remove the added label by this action automatically
+  # on updating a pull request by pushing changes.
+  # Please recieve this event.
+  pull_request:
+    types: synchronize
 
 jobs:
   detect_unmergeable_pull_request_and_mark_them:

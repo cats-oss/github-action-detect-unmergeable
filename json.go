@@ -6,6 +6,8 @@ import (
 	"os"
 
 	"encoding/json"
+
+	"github.com/google/go-github/v32/github"
 )
 
 // PushEventData is workaround to use *github.PushEvent.
@@ -30,7 +32,7 @@ func (p *PushEventData) GetCompare() string {
 	return *p.Compare
 }
 
-func loadJSONFile(path string) *PushEventData {
+func loadJSONFileForPushEventData(path string) *PushEventData {
 	jsonFile, err := os.Open(path)
 	defer jsonFile.Close()
 	if err != nil {
@@ -39,6 +41,48 @@ func loadJSONFile(path string) *PushEventData {
 	}
 
 	var data PushEventData
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+	if err := json.Unmarshal(byteValue, &data); err != nil {
+		log.Fatal(err)
+		return nil
+	}
+
+	return &data
+}
+
+// PullRequestEventData is workaround to use *github.PushEvent.
+// If we available, we should use *github.PushEvent.
+// But we cannot use it by parsing error. See https://github.com/cats-oss/github-action-detect-unmergeable/issues/71
+type PullRequestEventData struct {
+	Action      *string             `json:"action,omitempty"`
+	Number      *int                `json:"number,omitempty"`
+	PullRequest *github.PullRequest `json:"pull_request,omitempty"`
+}
+
+func (p *PullRequestEventData) GetAction() string {
+	if p == nil || p.Action == nil {
+		return ""
+	}
+	return *p.Action
+}
+
+func (p *PullRequestEventData) GetNumber() int {
+	if p == nil || p.Number == nil {
+		return -1
+	}
+	return *p.Number
+}
+
+func loadJSONFileForPullRequestEventData(path string) *PullRequestEventData {
+	jsonFile, err := os.Open(path)
+	defer jsonFile.Close()
+	if err != nil {
+		log.Fatal(err)
+		return nil
+	}
+
+	var data PullRequestEventData
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 	if err := json.Unmarshal(byteValue, &data); err != nil {
