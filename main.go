@@ -169,7 +169,7 @@ func checkPrIsChangedToMergeable(githubClient *github.Client, githubEventPath st
 
 	ctx := context.Background()
 	if _, err := githubClient.Issues.RemoveLabelForIssue(ctx, repoOwner, repoName, prNumber, needRebaseLabel); err != nil {
-		log.Printf("#%v is mergeable but fail to remove the label `%v`", prNumber, needRebaseLabel)
+		log.Printf("#%v is mergeable but fail to remove the label `%v` because `%v`", prNumber, needRebaseLabel, err)
 		return
 	}
 
