@@ -1,4 +1,4 @@
-FROM golang:1.17.2-buster
+FROM golang:1.17.3-buster
 ADD . /gh-action-detect-unmergeable/
 WORKDIR /gh-action-detect-unmergeable/
 RUN ["make", "build", "-j"]
