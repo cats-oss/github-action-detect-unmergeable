@@ -49,6 +49,9 @@ on:
 jobs:
   detect_unmergeable_pull_request_and_mark_them:
     runs-on: ubuntu-latest
+    permissions:
+      contents: none
+      pull-requests: write
     steps:
       - name: Run the action to detect unmergeable PRs
         # We recommend to use an arbitary latest version
